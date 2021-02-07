@@ -64,8 +64,13 @@ def create_dataset(data_path, output_path=None, contrast_normalization=False, wh
     transforms = torchvision.transforms.Compose([
         torchvision.transforms.RandomHorizontalFlip(1)
     ])
-    combinedtr = torch.cat((data_tr[sets_tr == 1],transforms(data_tr[sets_tr == 1])),0)
-    combinedlabel = torch.cat((label_tr[sets_tr == 1],label_tr[sets_tr == 1]),0)
+    transformsjitter = torchvision.transforms.Compose([
+        torchvision.transforms.ColorJitter()
+    ])
+    horizontalflip = torch.cat((data_tr[sets_tr == 1],transforms(data_tr[sets_tr == 1])),0)
+    combinedtr = torch.cat((horizontalflip,transformsjitter(data_tr[sets_tr == 1])),0)
+    horizontalfliplabel = torch.cat((label_tr[sets_tr == 1],label_tr[sets_tr == 1]),0)
+    combinedlabel = torch.cat((horizontalfliplabel,label_tr[sets_tr == 1]),0)
     train_ds = TensorDataset(combinedtr,combinedlabel)
     val_ds = TensorDataset(data_tr[sets_tr == 2], label_tr[sets_tr == 2])
 
